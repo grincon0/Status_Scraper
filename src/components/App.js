@@ -1,11 +1,19 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import Footer from './general/Footer/Footer';
+import Header from './general/Header/Header';
+import Wrapper from './general/Wrapper/Wrapper';
+import Status from '../pages/Status';
+import "./App.css"
+
 
 class App extends Component {
-    render(){
-        return(
-        <div>
-            <h1>Look ma, no create-react-app!</h1>
-        </div>
+    render() {
+        return (
+            <Wrapper>
+                <Header />
+                <Status />
+                <Footer>Rincon Enterprises</Footer>
+            </Wrapper>
         );
     }
 }
