@@ -9,11 +9,18 @@ import "./App.css"
 class App extends Component {
     render() {
         return (
+            <div>
+            <Header />
             <Wrapper>
-                <Header />
                 <Status />
-                <Footer>Rincon Enterprises</Footer>
+
             </Wrapper>
+            <Footer>
+                <div className="footer-note">
+                <span >&copy; Startup Group</span>
+                </div> 
+                </Footer>
+            </div>
         );
     }
 }

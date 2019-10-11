@@ -1,6 +1,13 @@
 import React from 'react';
 
+const wrapperStyle = {
+    height: '100vh',
+    marginRight: 'auto',
+    marginLeft: 'auto',
+    maxWidth: '960px'
 
+    
+}
 
 const Wrapper = (props) => {
 
@@ -11,13 +18,6 @@ const Wrapper = (props) => {
     )
 }
 
-const wrapperStyle = {
-    height: '100vh',
-    marginRight: 'auto',
-    marginLeft: 'auto',
-    maxWidth: '960px'
 
-    
-}
 
 export default Wrapper;
