@@ -10,15 +10,14 @@ class App extends Component {
     render() {
         return (
             <div>
-            <Header />
-            <Wrapper>
-                <Status />
-
-            </Wrapper>
-            <Footer>
-                <div className="footer-note">
-                <span >&copy; Startup Group</span>
-                </div> 
+                <Header />
+                <Wrapper>
+                    <Status />
+                </Wrapper>
+                <Footer>
+                    <div className="footer-note">
+                        <span >&copy; Startup Group</span>
+                    </div>
                 </Footer>
             </div>
         );

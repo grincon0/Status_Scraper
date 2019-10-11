@@ -21,58 +21,39 @@ const useScraper = () => {
 
     const stringToArray = (string) => {
         return string.replace(/\s\s+/g, '').split(" ");
-   }
+    }
 
 
     const scrape = useCallback(() => {
         axios.get("https://status.iterable.com")
             .then((response) => {
-                console.log(response.data);
-                const $ = cheerio.load(response.data);
-                /* const test = $('.component-inner-container');
-                const output = test.find('span').text();
-
-                const outputArray = stringToArray(output);
- */
-
-                $('.border-color').each((i, elem) => {
-                    const outputName = $(elem).find('.name').text();
-                    
-                    const serviceName = stringToArray(outputName);
-                    const serviceStatus = $(elem).find('.component-inner-container').attr('data-component-status');
-
-                    console.log('service',serviceName);
-                    console.log('status', serviceStatus);
-                })
-
-
-                console.log(outputArray);
-                return $;
-            }).then(($) => {
-
-              
                 let tempArray = [];
-                $('.container-component').each((i, elem) => {
-                    console.log(elem);
+                
 
-
+                const $ = cheerio.load(response.data);
+                $('.border-color').each((i, elem) => {
                     let result = {};
+                    const outputName = $(elem).find('.name').text();
 
-                    result.name = $(elem).find('span.name').text();
-                    result.status = $(elem).attr('data-component-status');
+                    if(outputName !== "" || outputName.length > 2){
+                        const serviceName = stringToArray(outputName).join(' ');
+                  
+                        //console.log('merged', serviceName);
+                        const serviceStatus = $(elem).find('.component-inner-container').attr('data-component-status');
+                        //console.log('status', serviceStatus);
 
-                    if (result.status === 'operational') {
-                        result.isLive = true;
+                        result.name = serviceName;
+                        result.status = serviceStatus;
 
-                    } else {
-                        result.isLive = false;
+                        tempArray.push(result);
                     }
-                    console.log(result);
-                    tempArray.push(result);
-                })
+                });
 
+
+                return tempArray;
+            }).then((tempArray) => {
                 console.log(tempArray);
-                dispatchScraper({ type: 'RESPONSE', response: tempArray })
+                dispatchScraper({ type: 'RESPONSE', response:{ tempArray }})
 
             }).catch(error => {
                 console.log(error);
