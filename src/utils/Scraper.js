@@ -3,12 +3,20 @@ import { useReducer, useCallback } from 'react';
 import axios from 'axios';
 import cheerio from 'cheerio';
 
-const initialArray = [];
+const initialState = {
+    hasScraped: false,
+    data: null
+};
 
 const scraperReducer = (currentState, action) => {
     switch (action.type) {
         case 'RESPONSE':
-            return action.response;
+            return {
+                hasScraped: true,
+                data: action.response
+            }
+            
+            
         case 'CLEAR':
             return initialArray;
     }
@@ -17,7 +25,7 @@ const scraperReducer = (currentState, action) => {
 
 const useScraper = () => {
 
-    const [scraperState, dispatchScraper] = useReducer(scraperReducer, initialArray);
+    const [scraperState, dispatchScraper] = useReducer(scraperReducer,initialState);
 
     const stringToArray = (string) => {
         return string.replace(/\s\s+/g, '').split(" ");
@@ -37,23 +45,18 @@ const useScraper = () => {
 
                     if(outputName !== "" || outputName.length > 2){
                         const serviceName = stringToArray(outputName).join(' ');
-                  
-                        //console.log('merged', serviceName);
                         const serviceStatus = $(elem).find('.component-inner-container').attr('data-component-status');
-                        //console.log('status', serviceStatus);
-
+                    
                         result.name = serviceName;
                         result.status = serviceStatus;
 
                         tempArray.push(result);
                     }
                 });
-
-
                 return tempArray;
             }).then((tempArray) => {
                 console.log(tempArray);
-                dispatchScraper({ type: 'RESPONSE', response:{ tempArray }})
+                dispatchScraper({ type: 'RESPONSE', response: tempArray })
 
             }).catch(error => {
                 console.log(error);

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const wrapperStyle = {
-    height: '100vh',
+    minHeight: '100vh',
     marginRight: 'auto',
     marginLeft: 'auto',
     maxWidth: '960px'

@@ -1,12 +1,14 @@
 import React, {useReducer, useCallback, useEffect, useMemo} from 'react';
-import Vendor from '../components/Resources/Vendor';
 import ResourceList from '../components/Resources/ResourceList';
 import useScraper from '../utils/Scraper';
+import Vendor from '../components/Resources/Vendor';
+
+
 
 const statusReducer = (currentVendors, action) => {
-    switch (action) {
+    switch (action.type) {
         case 'ADD':
-            return [...currentVendors, action.vendor];
+            return action.vendor;
     
         default:
             throw new Error('Should not go here');
@@ -15,44 +17,70 @@ const statusReducer = (currentVendors, action) => {
 
 const Status = () => {
 
-    const [statuses, dispatch] = useReducer(statusReducer, []);
+    const [statuses, dispatch] = useReducer(statusReducer, null);
     const {scrape, scraperData} = useScraper();
 
     useEffect(() => {
-        console.log(scraperData);
-        if(scraperData.length > 0){
-            dispatch({type: 'ADD',  vendor: scraperData });
+        //console.log('new state', scraperData.data);
+        //console.log('length', scraperData.data.length);
+        if(scraperData.hasScraped){
+            dispatch({type: 'ADD',  vendor: scraperData.data });
+        }else{
+            scrape();
         }
-    }, [scraperData])
+ 
+    }, [scraperData, scrape])
+
+/*     useEffect(()=> {
+       console.log(statuses);
+    }, [statuses]) */
 
     const scrapeIterable = useCallback(() => {
         scrape();
     }, [scrape]);
 
+    const resourceList = useMemo(() => {
+
+
+        const handleVendorStatus = (statusString) => {
+            return statusString.toLowerCase() === 'operational' ? true : false;
+        }
+
+        if(statuses){
+            console.log('resourceList', statuses);
+
+            const elementList = statuses.map((vendor, i) => (
+
+                <Vendor operational={handleVendorStatus(vendor.status)} key={i} name={vendor.name} status={vendor.status} />
+            ))
+
+            return elementList;
+        }
+
+    /*     return (
+            <ResourceList 
+            name={'Iterable'} 
+            vendorList={statuses}/>
+        ) */
+    }, [statuses]);
+
+    
+
     return(
         <div style={containerStyle}>
-
-
-        
-            
-            <ResourceList name={'Iterable'}>
-            <Vendor
-            name={'This is a test'}
-            status={'ALL SYSTEMS ARE GO!'}
-            />
+            <ResourceList name="Iterable">
+            {resourceList}
             </ResourceList>
-
-            <button style={buttonStyle} onClick={scrapeIterable}>Scrape</button>
-            
+            <button style={buttonStyle} onClick={scrapeIterable}>Refresh</button>
         </div>
-
     )
 }
 
 const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
-    height: '87%'
+    height: '87%',
+    paddingBottom: '40px'
 }
 
 const buttonStyle = {
@@ -63,7 +91,6 @@ const buttonStyle = {
     border: '0',
     color: 'white',
     fontSize: '16px'
-
 }
 
 export default Status;
