@@ -37,7 +37,7 @@ const Status = () => {
         scrape();
     }, [scrape]);
 
-    const resourceList = useMemo(() => {
+/*     const resourceList = useMemo(() => {
 
         if (hasScraped && statuses !== null) {
             const handleVendorStatus = (statusString) => {
@@ -51,31 +51,28 @@ const Status = () => {
             return elementList;
 
         }
-
+ */
 
         /*     return (
                 <ResourceList 
                 name={'Iterable'} 
                 vendorList={statuses}/>
             ) */
-    }, [statuses, hasScraped]);
+ /*    }, [statuses, hasScraped]); */
 
     return (
         <div style={containerStyle}>
 
             {isLoading && <Loading />}
-            {!isLoading && 
+            {!isLoading && data &&
             <div>
-            <ResourceList name="Iterable">
-                {resourceList}
+            <ResourceList data={statuses} name="Iterable">
+               {/*  {resourceList} */}
             </ResourceList>
             <button style={buttonStyle} onClick={scrapeIterable}>Refresh</button>
             </div>
         
         }
-            
-            
-                
         </div>
     )
 }
