@@ -5,14 +5,21 @@ import cheerio from 'cheerio';
 
 const initialState = {
     hasScraped: false,
+    isLoading: false,
     data: null
 };
 
 const scraperReducer = (currentState, action) => {
     switch (action.type) {
+        case 'SEND':
+            return {
+                ...currentState,
+                isLoading: true
+            }
         case 'RESPONSE':
             return {
                 hasScraped: true,
+                isLoading: false,
                 data: action.response
             }
             
@@ -33,6 +40,7 @@ const useScraper = () => {
 
 
     const scrape = useCallback(() => {
+        dispatchScraper({ type: 'SEND'});
         axios.get("https://status.iterable.com")
             .then((response) => {
                 let tempArray = [];
@@ -55,7 +63,6 @@ const useScraper = () => {
                 });
                 return tempArray;
             }).then((tempArray) => {
-                console.log(tempArray);
                 dispatchScraper({ type: 'RESPONSE', response: tempArray })
 
             }).catch(error => {
@@ -63,9 +70,17 @@ const useScraper = () => {
             })
     }, []);
 
+
+    const serviceScraper = useCallback(() => {
+
+    }, [])
+
     return {
         scraperData: scraperState,
-        scrape: scrape
+        scrape: scrape,
+        isLoading: scraperState.isLoading,
+        hasScraped: scraperState.hasScraped,
+        data: scraperState.data
     }
 }
 

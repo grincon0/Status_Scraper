@@ -1,7 +1,8 @@
-import React, {useReducer, useCallback, useEffect, useMemo} from 'react';
+import React, { useReducer, useCallback, useEffect, useMemo } from 'react';
 import ResourceList from '../components/Resources/ResourceList';
 import useScraper from '../utils/Scraper';
 import Vendor from '../components/Resources/Vendor';
+import Loading from '../components/Loading/Loading'
 
 
 
@@ -9,31 +10,28 @@ const statusReducer = (currentVendors, action) => {
     switch (action.type) {
         case 'ADD':
             return action.vendor;
-    
+
         default:
             throw new Error('Should not go here');
     }
-} 
+}
 
 const Status = () => {
 
     const [statuses, dispatch] = useReducer(statusReducer, null);
-    const {scrape, scraperData} = useScraper();
+    const { hasScraped, scrape, scraperData, isLoading, data } = useScraper();
 
     useEffect(() => {
-        //console.log('new state', scraperData.data);
-        //console.log('length', scraperData.data.length);
-        if(scraperData.hasScraped){
-            dispatch({type: 'ADD',  vendor: scraperData.data });
-        }else{
+        if (hasScraped) {
+            dispatch({ type: 'ADD', vendor: data });
+        } else {
             scrape();
         }
- 
-    }, [scraperData, scrape])
+    }, [data, scrape, hasScraped])
 
-/*     useEffect(()=> {
-       console.log(statuses);
-    }, [statuses]) */
+    /*     useEffect(()=> {
+           console.log(statuses);
+        }, [statuses]) */
 
     const scrapeIterable = useCallback(() => {
         scrape();
@@ -41,37 +39,43 @@ const Status = () => {
 
     const resourceList = useMemo(() => {
 
+        if (hasScraped && statuses !== null) {
+            const handleVendorStatus = (statusString) => {
+                return statusString.toLowerCase() === 'operational' ? true : false;
+            }
 
-        const handleVendorStatus = (statusString) => {
-            return statusString.toLowerCase() === 'operational' ? true : false;
-        }
-
-        if(statuses){
             console.log('resourceList', statuses);
-
             const elementList = statuses.map((vendor, i) => (
-
                 <Vendor operational={handleVendorStatus(vendor.status)} key={i} name={vendor.name} status={vendor.status} />
-            ))
-
+            ));
             return elementList;
+
         }
 
-    /*     return (
-            <ResourceList 
-            name={'Iterable'} 
-            vendorList={statuses}/>
-        ) */
-    }, [statuses]);
 
-    
+        /*     return (
+                <ResourceList 
+                name={'Iterable'} 
+                vendorList={statuses}/>
+            ) */
+    }, [statuses, hasScraped]);
 
-    return(
+    return (
         <div style={containerStyle}>
+
+            {isLoading && <Loading />}
+            {!isLoading && 
+            <div>
             <ResourceList name="Iterable">
-            {resourceList}
+                {resourceList}
             </ResourceList>
             <button style={buttonStyle} onClick={scrapeIterable}>Refresh</button>
+            </div>
+        
+        }
+            
+            
+                
         </div>
     )
 }
